@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "wildfire-detection"
+version = "0.1.0"
+description = ""
+authors = ["Svechnikar Daniil <danilmozgovoy2493@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+setuptools = "^69.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
