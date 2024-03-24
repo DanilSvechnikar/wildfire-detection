@@ -3,6 +3,7 @@ from torch import nn
 
 
 def count_parameters(model: nn.Module) -> int:
+    """Number of network parameters to be trained."""
     table = PrettyTable(["Modules", "Parameters"])
     total_params = 0
     for name, parameter in model.named_parameters():
@@ -14,4 +15,3 @@ def count_parameters(model: nn.Module) -> int:
     print(table)
     print(f"Total Trainable Params: {total_params}")
     return total_params
-

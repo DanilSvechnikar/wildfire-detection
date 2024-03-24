@@ -21,9 +21,10 @@ pillow = { url = "https://download.pytorch.org/whl/pillow-10.2.0-cp312-cp312-win
 MarkupSafe = { url = "https://download.pytorch.org/whl/MarkupSafe-2.1.3-cp312-cp312-win_amd64.whl" }
 mpmath = { url = "https://download.pytorch.org/whl/mpmath-1.3.0-py3-none-any.whl" }
 ultralytics = "^8.1.20"
-nvitop = "^1.3.2"
 gpustat = "^1.1.1"
 prettytable = "^3.10.0"
+nvitop = "^1.3.2"
+flet = "^0.21.2"
 
 [build-system]
 requires = ["poetry-core"]
