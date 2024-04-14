@@ -1,6 +1,8 @@
 """Main App."""
 import flet as ft
 
+from typing import List
+
 from pathlib import Path
 from wildfire_detection.models import models_utils
 
@@ -12,6 +14,7 @@ def main(page: ft.Page) -> None:
     page.title = "Forest Fire Detection"
     page.scroll = "auto"
     page.theme_mode = ft.ThemeMode.DARK
+    page.window_always_on_top = False
 
     page.window_center()
 
@@ -19,6 +22,9 @@ def main(page: ft.Page) -> None:
     def run_predict(e: ft.ControlEvent) -> None:
         """Evaluate model and show image."""
         path_file = Path(image_holder.content.src)
+        if "mp4" in path_file.name:
+            models_utils.evaluate_model_video(path_file)
+            return
 
         image_holder.content = ft.Container(
             ft.Column([
@@ -55,7 +61,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
-    def container_item(lst) -> list[ft.Container]:
+    def container_item(lst: List[Path]) -> List[ft.Container]:
         """Add list of items to container."""
         names_lst = [path_file.name for path_file in lst]
         items = []
@@ -96,7 +102,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
-    allowed_ext_files = ["jpg", "png", "jpeg"]
+    allowed_ext_files = ["jpg", "png", "jpeg", "mp4"]
     select_image_btn = ft.ElevatedButton(
         text="Open Gallery",
         # bgcolor="green800",
@@ -164,6 +170,22 @@ def main(page: ft.Page) -> None:
 
     page.add(buttons_row)
     page.add(row_container)
+    # page.add(
+    #     video := ft.Video(
+    #         expand=True,
+    #         playlist=[ft.VideoMedia("ForestFire.mp4")],
+    #         playlist_mode=ft.PlaylistMode.LOOP,
+    #         fill_color=ft.colors.BLUE_400,
+    #         aspect_ratio=16 / 9,
+    #         volume=100,
+    #         autoplay=True,
+    #         filter_quality=ft.FilterQuality.HIGH,
+    #         muted=False,
+    #         on_loaded=lambda e: print("Video loaded successfully!"),
+    #         on_enter_fullscreen=lambda e: print("Video entered fullscreen!"),
+    #         on_exit_fullscreen=lambda e: print("Video exited fullscreen!"),
+    #     ),
+    # )
 
     page.update()
 
