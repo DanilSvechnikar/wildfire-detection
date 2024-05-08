@@ -1,7 +1,7 @@
 """Main App."""
 import flet as ft
-
-from typing import List
+import folium
+import webbrowser
 
 from pathlib import Path
 from wildfire_detection.models import models_utils
@@ -17,6 +17,23 @@ def main(page: ft.Page) -> None:
     page.window_always_on_top = False
 
     page.window_center()
+
+
+    def map_btn_clicked(e: ft.ControlEvent) -> None:
+        """Open map in browser."""
+        fol_map = folium.Map()
+
+        folium.Marker(
+            location=[47.603230, -122.330280],
+            tooltip="Click for more information",
+        ).add_to(fol_map)
+
+        fol_map.fit_bounds(fol_map.get_bounds())
+
+        save_path = PROJECT_ROOT / "data" / "temp" / "map.html"
+        fol_map.save(save_path)
+
+        webbrowser.open("file://" + str(save_path), new=2)
 
 
     def run_predict(e: ft.ControlEvent) -> None:
@@ -46,6 +63,8 @@ def main(page: ft.Page) -> None:
                 visible=True,
                 fit=ft.ImageFit.CONTAIN,
             )
+            map_row.visible = True
+
             page.update()
 
 
@@ -61,7 +80,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
-    def container_item(lst: List[Path]) -> List[ft.Container]:
+    def container_item(lst: list[Path]) -> list[ft.Container]:
         """Add list of items to container."""
         names_lst = [path_file.name for path_file in lst]
         items = []
@@ -105,25 +124,43 @@ def main(page: ft.Page) -> None:
     allowed_ext_files = ["jpg", "png", "jpeg", "mp4"]
     select_image_btn = ft.ElevatedButton(
         text="Open Gallery",
-        # bgcolor="green800",
         bgcolor="#019267",
         on_click=lambda _: file_picker.pick_files(
             allow_multiple=False,
-            allowed_extensions=allowed_ext_files
-        )
+            allowed_extensions=allowed_ext_files,
+        ),
     )
 
     run_predictor_btn = ft.ElevatedButton(
         text="Run Prediction",
         on_click=run_predict,
-        disabled=True,
+        disabled=False,
     )
 
-    buttons_row = ft.Container(
+    text_map = ft.Text("Open on Map:")
+    map_button = ft.IconButton(
+        icon=ft.icons.MAP_SHARP,
+        on_click=map_btn_clicked,
+        icon_color="red600",
+        icon_size=30,
+        tooltip="Open Map",
+    )
+    map_row = ft.Container(
         ft.Row(
-            controls=[select_image_btn, run_predictor_btn],
-            spacing=25
+            [text_map, map_button],
+            spacing=5,
         ),
+        margin=ft.margin.only(left=page.window_width / 3),
+        visible=False,
+    )
+
+    buttons_row = ft.Row(
+        controls=[
+            select_image_btn,
+            run_predictor_btn,
+            map_row,
+        ],
+        spacing=25,
     )
 
 
@@ -144,7 +181,7 @@ def main(page: ft.Page) -> None:
             rotation=45,
         ),
         width=300,
-        height=page.window_height - 50,
+        height=page.window_height - 70,
         border_radius=ft.border_radius.all(5),
         padding=ft.padding.all(10),
         visible=False,
@@ -168,24 +205,9 @@ def main(page: ft.Page) -> None:
         ),
     )
 
+
     page.add(buttons_row)
     page.add(row_container)
-    # page.add(
-    #     video := ft.Video(
-    #         expand=True,
-    #         playlist=[ft.VideoMedia("ForestFire.mp4")],
-    #         playlist_mode=ft.PlaylistMode.LOOP,
-    #         fill_color=ft.colors.BLUE_400,
-    #         aspect_ratio=16 / 9,
-    #         volume=100,
-    #         autoplay=True,
-    #         filter_quality=ft.FilterQuality.HIGH,
-    #         muted=False,
-    #         on_loaded=lambda e: print("Video loaded successfully!"),
-    #         on_enter_fullscreen=lambda e: print("Video entered fullscreen!"),
-    #         on_exit_fullscreen=lambda e: print("Video exited fullscreen!"),
-    #     ),
-    # )
 
     page.update()
 

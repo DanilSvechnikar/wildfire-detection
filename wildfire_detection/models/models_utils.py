@@ -28,13 +28,14 @@ def evaluate_model(path_file: Path) -> bool:
 
 def evaluate_model_video(path_file: Path) -> None:
     """Evaluate model on video."""
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     cap = cv2.VideoCapture(str(path_file))
 
     cv2.namedWindow("Forest Fire Detection", cv2.WINDOW_NORMAL)
     while cap.isOpened():
         success, frame = cap.read()
         if success:
-            results = MODEL(frame)
+            results = MODEL(frame, save=False, device=device)
 
             annotated_frame = results[0].plot()
             cv2.imshow("Forest Fire Detection", annotated_frame)

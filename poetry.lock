@@ -261,6 +261,20 @@ six = ">=1.9.0"
 wcwidth = ">=0.1.4"
 
 [[package]]
+name = "branca"
+version = "0.7.2"
+description = "Generate complex HTML+JS pages with Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "branca-0.7.2-py3-none-any.whl", hash = "sha256:853a359c34d08fd06498be762d8be9932750db4049cac11e25dd6f23562e25c2"},
+    {file = "branca-0.7.2.tar.gz", hash = "sha256:ca4c94643ef31b819987ca5bd19c6009ea17b440baa3aac04628545f7a4da023"},
+]
+
+[package.dependencies]
+jinja2 = ">=3"
+
+[[package]]
 name = "cachetools"
 version = "5.3.3"
 description = "Extensible memoizing collections and decorators"
@@ -772,6 +786,27 @@ files = [
 flet-core = "0.21.2"
 httpx = ">=0,<1"
 oauthlib = ">=3.2.2,<4.0.0"
+
+[[package]]
+name = "folium"
+version = "0.16.0"
+description = "Make beautiful maps with Leaflet.js & Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "folium-0.16.0-py2.py3-none-any.whl", hash = "sha256:ba72505db18bef995c880da19457d2b10c931db8059af5f6ccec9310d262b584"},
+    {file = "folium-0.16.0.tar.gz", hash = "sha256:2585ee9253dc758d3a365534caa6fb5fa0c244646db4dc5819afc67bbd4daabb"},
+]
+
+[package.dependencies]
+branca = ">=0.6.0"
+jinja2 = ">=2.9"
+numpy = "*"
+requests = "*"
+xyzservices = "*"
+
+[package.extras]
+testing = ["pytest"]
 
 [[package]]
 name = "fonttools"
@@ -1871,13 +1906,13 @@ url = "https://download.pytorch.org/whl/networkx-3.2.1-py3-none-any.whl"
 
 [[package]]
 name = "notebook"
-version = "7.1.2"
+version = "7.1.3"
 description = "Jupyter Notebook - A web-based notebook environment for interactive computing"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "notebook-7.1.2-py3-none-any.whl", hash = "sha256:fc6c24b9aef18d0cd57157c9c47e95833b9b0bdc599652639acf0bdb61dc7d5f"},
-    {file = "notebook-7.1.2.tar.gz", hash = "sha256:efc2c80043909e0faa17fce9e9b37c059c03af0ec99a4d4db84cb21d9d2e936a"},
+    {file = "notebook-7.1.3-py3-none-any.whl", hash = "sha256:919b911e59f41f6e3857ce93c9d93535ba66bb090059712770e5968c07e1004d"},
+    {file = "notebook-7.1.3.tar.gz", hash = "sha256:41fcebff44cf7bb9377180808bcbae066629b55d8c7722f1ebbe75ca44f9cfc1"},
 ]
 
 [package.dependencies]
@@ -3515,13 +3550,13 @@ files = [
 
 [[package]]
 name = "ultralytics"
-version = "8.1.33"
+version = "8.2.6"
 description = "Ultralytics YOLOv8 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ultralytics-8.1.33-py3-none-any.whl", hash = "sha256:d4a2cfff3bc4ffa6f7bab751c7de177a39da624b4fe335d6daeee6e26c2769ae"},
-    {file = "ultralytics-8.1.33.tar.gz", hash = "sha256:553e088546ccdd84d1717f998ba90e8631535d9f7b4ed9598c9c1a7d17afa889"},
+    {file = "ultralytics-8.2.6-py3-none-any.whl", hash = "sha256:455b55c1b028973b5ca43a2b7f1fa92ebfd66ddc38096d90fe89088ed9b71270"},
+    {file = "ultralytics-8.2.6.tar.gz", hash = "sha256:b82e77d3da0b45184866b419d6cd23eb00576adf8e6b0c024742b6880d50e6a4"},
 ]
 
 [package.dependencies]
@@ -3541,9 +3576,9 @@ torchvision = ">=0.9.0"
 tqdm = ">=4.64.0"
 
 [package.extras]
-dev = ["check-manifest", "coverage[toml]", "ipython", "mkdocs-jupyter", "mkdocs-material (>=9.5.9)", "mkdocs-redirects", "mkdocs-ultralytics-plugin (>=0.0.44)", "mkdocstrings[python]", "pre-commit", "pytest", "pytest-cov"]
+dev = ["check-manifest", "coverage[toml]", "ipython", "mkdocs (>=1.6.0)", "mkdocs-jupyter", "mkdocs-material (>=9.5.9)", "mkdocs-redirects", "mkdocs-ultralytics-plugin (>=0.0.44)", "mkdocstrings[python]", "pre-commit", "pytest", "pytest-cov"]
 explorer = ["duckdb (<=0.9.2)", "lancedb", "streamlit"]
-export = ["coremltools (>=7.0)", "onnx (>=1.12.0)", "openvino (>=2024.0.0)", "tensorflow (<=2.13.1)", "tensorflowjs (>=3.9.0)"]
+export = ["coremltools (>=7.0)", "h5py (!=3.11.0)", "numpy (==1.23.5)", "onnx (>=1.12.0)", "openvino (>=2024.0.0)", "tensorflow (<=2.13.1)", "tensorflowjs (>=3.9.0)"]
 extra = ["albumentations (>=1.0.3)", "hub-sdk (>=0.0.5)", "ipython", "pycocotools (>=2.0.7)"]
 logging = ["comet", "dvclive (>=2.12.0)", "tensorboard (>=2.13.0)"]
 
@@ -3943,7 +3978,18 @@ files = [
     {file = "windows_curses-2.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:00d5d000b68db38bd97b6a5b90ee4b4c915a7cef7492fc5aa9ecc7794ee2ca93"},
 ]
 
+[[package]]
+name = "xyzservices"
+version = "2024.4.0"
+description = "Source of XYZ tiles providers"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "xyzservices-2024.4.0-py3-none-any.whl", hash = "sha256:b83e48c5b776c9969fffcfff57b03d02b1b1cd6607a9d9c4e7f568b01ef47f4c"},
+    {file = "xyzservices-2024.4.0.tar.gz", hash = "sha256:6a04f11487a6fb77d92a98984cd107fbd9157fd5e65f929add9c3d6e604ee88c"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "f51e5456d6350d3eba7c2d3784f79d1db40bf697cd8218c70aa40fd87dea2471"
+content-hash = "532c4f98cec23f43bed8311ef65a7bfb4bf5cd8d4a1613ca78fe434983adf1c4"
