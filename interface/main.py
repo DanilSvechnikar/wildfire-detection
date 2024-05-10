@@ -21,11 +21,14 @@ def main(page: ft.Page) -> None:
 
     def map_btn_clicked(e: ft.ControlEvent) -> None:
         """Open map in browser."""
+        current_img_fpath = image_holder.content.src
+
         fol_map = folium.Map()
 
         folium.Marker(
-            location=[47.603230, -122.330280],
+            location=[6.243499,-75.579226],
             tooltip="Click for more information",
+            popup="Medellin",
         ).add_to(fol_map)
 
         fol_map.fit_bounds(fol_map.get_bounds())

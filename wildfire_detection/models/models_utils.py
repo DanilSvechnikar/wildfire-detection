@@ -1,5 +1,4 @@
 """This module contain functions for working with model."""
-
 import torch
 import cv2
 
@@ -7,7 +6,8 @@ from ultralytics import YOLO
 from pathlib import Path
 
 PROJECT_ROOT = Path().resolve().parents[0]
-MODEL = YOLO(PROJECT_ROOT / "runs" / "detect" / "train" / "weights" / "best.pt")
+MODEL = YOLO(PROJECT_ROOT / "models" / "trained_yolov8n.pt")
+PARAMS_EVAL = {}
 
 
 def evaluate_model(path_file: Path) -> bool:
