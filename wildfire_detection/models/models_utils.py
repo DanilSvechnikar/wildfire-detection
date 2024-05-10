@@ -42,6 +42,35 @@ def evaluate_model_video(path_file: Path) -> None:
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
+
+            if cv2.getWindowProperty("Forest Fire Detection", cv2.WND_PROP_VISIBLE) < 1:
+                break
+        else:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+def open_web_camera_with_model():
+    """Open WebCam with model evaluating."""
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    cap = cv2.VideoCapture(0)
+
+    cv2.namedWindow("Web Camera")
+    while cap.isOpened():
+        success, frame = cap.read()
+        if success:
+            results = MODEL(frame, save=False, device=device)
+
+            annotated_frame = results[0].plot()
+            cv2.imshow("Web Camera", annotated_frame)
+
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+
+            if cv2.getWindowProperty("Web Camera", cv2.WND_PROP_VISIBLE) < 1:
+                break
         else:
             break
 

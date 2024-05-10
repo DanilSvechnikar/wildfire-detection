@@ -1,22 +1,31 @@
 """Main App."""
+from pathlib import Path
+from wildfire_detection.models.models_utils import (
+    evaluate_model,
+    evaluate_model_video,
+    open_web_camera_with_model,
+)
+
 import flet as ft
 import folium
 import webbrowser
-
-from pathlib import Path
-from wildfire_detection.models import models_utils
 
 PROJECT_ROOT = Path().resolve().parents[0]
 
 
 def main(page: ft.Page) -> None:
     """Main function."""
+    # ----- Main Settings ----- #
     page.title = "Forest Fire Detection"
     page.scroll = "auto"
     page.theme_mode = ft.ThemeMode.DARK
     page.window_always_on_top = False
-
     page.window_center()
+
+    # ----- Functions ----- #
+    def web_camera_clicked(e: ft.ControlEvent) -> None:
+        """Open Web Camera with model evaluating."""
+        open_web_camera_with_model()
 
 
     def map_btn_clicked(e: ft.ControlEvent) -> None:
@@ -43,7 +52,7 @@ def main(page: ft.Page) -> None:
         """Evaluate model and show image."""
         path_file = Path(image_holder.content.src)
         if "mp4" in path_file.name:
-            models_utils.evaluate_model_video(path_file)
+            evaluate_model_video(path_file)
             return
 
         image_holder.content = ft.Container(
@@ -56,7 +65,7 @@ def main(page: ft.Page) -> None:
         )
         page.update()
 
-        res = models_utils.evaluate_model(path_file)
+        res = evaluate_model(path_file)
         if res is True:
             predicted_data = PROJECT_ROOT / "data" / "predicted"
             predicted_data /= path_file.name
@@ -124,6 +133,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
 
+    # ----- Top Row Of Buttons ----- #
     allowed_ext_files = ["jpg", "png", "jpeg", "mp4"]
     select_image_btn = ft.ElevatedButton(
         text="Open Gallery",
@@ -137,7 +147,14 @@ def main(page: ft.Page) -> None:
     run_predictor_btn = ft.ElevatedButton(
         text="Run Prediction",
         on_click=run_predict,
-        disabled=False,
+        disabled=True,
+    )
+
+    main_buttons = ft.Container(
+        ft.Row(
+            [select_image_btn, run_predictor_btn],
+            spacing=20,
+        ),
     )
 
     text_map = ft.Text("Open on Map:")
@@ -148,25 +165,50 @@ def main(page: ft.Page) -> None:
         icon_size=30,
         tooltip="Open Map",
     )
+
     map_row = ft.Container(
         ft.Row(
             [text_map, map_button],
             spacing=5,
         ),
-        margin=ft.margin.only(left=page.window_width / 3),
         visible=False,
+    )
+
+    popup_menu_btn = ft.Container(
+        ft.PopupMenuButton(
+            items=[
+                ft.PopupMenuItem(
+                    icon=ft.icons.ARCHITECTURE,
+                    text="Open Demonstrate Page",
+                    on_click=None,
+                ),
+                ft.PopupMenuItem(),
+                ft.PopupMenuItem(
+                    icon=ft.icons.CAMERA,
+                    text="Open Web Camera",
+                    on_click=web_camera_clicked,
+                ),
+                ft.PopupMenuItem(),
+                ft.PopupMenuItem(
+                    icon=ft.icons.FOREST_SHARP,
+                    text="Run Real Work",
+                    on_click=None,
+                ),
+            ],
+        ),
     )
 
     buttons_row = ft.Row(
         controls=[
-            select_image_btn,
-            run_predictor_btn,
+            main_buttons,
             map_row,
+            popup_menu_btn,
         ],
-        spacing=25,
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
 
 
+    # ----- List And Image ----- #
     file_picker = ft.FilePicker(on_result=handle_loaded_file)
     page.overlay.append(file_picker)
 
@@ -209,9 +251,9 @@ def main(page: ft.Page) -> None:
     )
 
 
+    # ----- Adding Elements ----- #
     page.add(buttons_row)
     page.add(row_container)
-
     page.update()
 
 
