@@ -1,14 +1,18 @@
 """Main App."""
 from pathlib import Path
+
+import flet as ft
+import folium
+import webbrowser
+
 from wildfire_detection.models.models_utils import (
     evaluate_model,
     evaluate_model_video,
     open_web_camera_with_model,
 )
-
-import flet as ft
-import folium
-import webbrowser
+from wildfire_detection.data.data_utils import (
+    get_coords_location,
+)
 
 PROJECT_ROOT = Path().resolve().parents[0]
 
@@ -31,21 +35,26 @@ def main(page: ft.Page) -> None:
     def map_btn_clicked(e: ft.ControlEvent) -> None:
         """Open map in browser."""
         current_img_fpath = image_holder.content.src
+        img_fpath = current_img_fpath.resolve().parents[1] / "test" / current_img_fpath.name
 
-        fol_map = folium.Map()
+        decimal_latitude, decimal_longitude = get_coords_location(img_fpath)
+        url = f"https://www.google.com/maps?q={decimal_latitude},{decimal_longitude}"
+        webbrowser.open_new_tab(url)
 
-        folium.Marker(
-            location=[6.243499,-75.579226],
-            tooltip="Click for more information",
-            popup="Medellin",
-        ).add_to(fol_map)
-
-        fol_map.fit_bounds(fol_map.get_bounds())
-
-        save_path = PROJECT_ROOT / "data" / "temp" / "map.html"
-        fol_map.save(save_path)
-
-        webbrowser.open("file://" + str(save_path), new=2)
+        # fol_map = folium.Map()
+        #
+        # folium.Marker(
+        #     location=[6.243499,-75.579226],
+        #     tooltip="Click for more information",
+        #     popup="Medellin",
+        # ).add_to(fol_map)
+        #
+        # fol_map.fit_bounds(fol_map.get_bounds())
+        #
+        # save_path = PROJECT_ROOT / "data" / "temp" / "map.html"
+        # fol_map.save(save_path)
+        #
+        # webbrowser.open("file://" + str(save_path), new=2)
 
 
     def run_predict(e: ft.ControlEvent) -> None:
@@ -157,7 +166,7 @@ def main(page: ft.Page) -> None:
         ),
     )
 
-    text_map = ft.Text("Open on Map:")
+    text_map = ft.Text("Open Map Location:")
     map_button = ft.IconButton(
         icon=ft.icons.MAP_SHARP,
         on_click=map_btn_clicked,

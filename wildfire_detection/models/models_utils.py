@@ -6,15 +6,19 @@ from ultralytics import YOLO
 from pathlib import Path
 
 PROJECT_ROOT = Path().resolve().parents[0]
+
 MODEL = YOLO(PROJECT_ROOT / "models" / "trained_yolov8n.pt")
-PARAMS_EVAL = {}
+PARAMS_EVAL = {
+    "device": "cuda" if torch.cuda.is_available() else "cpu",
+    # "imgsz": 640,
+    # "iou": 0.7,
+    # "conf": 0.25,
+}
 
 
 def evaluate_model(path_file: Path) -> bool:
     """Evaluate model on images."""
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-
-    result = MODEL.predict(path_file, save=False, device=device)
+    result = MODEL(path_file, save=False, **PARAMS_EVAL)
 
     save_path = PROJECT_ROOT / "data" / "predicted"
     for res in result:
@@ -28,14 +32,13 @@ def evaluate_model(path_file: Path) -> bool:
 
 def evaluate_model_video(path_file: Path) -> None:
     """Evaluate model on video."""
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     cap = cv2.VideoCapture(str(path_file))
 
     cv2.namedWindow("Forest Fire Detection", cv2.WINDOW_NORMAL)
     while cap.isOpened():
         success, frame = cap.read()
         if success:
-            results = MODEL(frame, save=False, device=device)
+            results = MODEL(frame, save=False, **PARAMS_EVAL)
 
             annotated_frame = results[0].plot()
             cv2.imshow("Forest Fire Detection", annotated_frame)
@@ -54,14 +57,13 @@ def evaluate_model_video(path_file: Path) -> None:
 
 def open_web_camera_with_model():
     """Open WebCam with model evaluating."""
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     cap = cv2.VideoCapture(0)
-
     cv2.namedWindow("Web Camera")
+
     while cap.isOpened():
         success, frame = cap.read()
         if success:
-            results = MODEL(frame, save=False, device=device)
+            results = MODEL(frame, save=False, **PARAMS_EVAL)
 
             annotated_frame = results[0].plot()
             cv2.imshow("Web Camera", annotated_frame)
