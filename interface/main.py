@@ -1,9 +1,9 @@
 """Main App."""
-from pathlib import Path
-
 import flet as ft
 import folium
 import webbrowser
+
+from pathlib import Path
 
 from wildfire_detection.models.models_utils import (
     evaluate_model,
@@ -20,11 +20,66 @@ PROJECT_ROOT = Path().resolve().parents[0]
 def main(page: ft.Page) -> None:
     """Main function."""
     # ----- Main Settings ----- #
+    page.route = "/"
     page.title = "Forest Fire Detection"
     page.scroll = "auto"
     page.theme_mode = ft.ThemeMode.DARK
     page.window_always_on_top = False
     page.window_center()
+
+    # ----- Real Work Emulation ----- #
+    # def loader_batch_images(
+    #     stream_data: list[Path], batch_size: int = 4, delay_time: float = 1.0,
+    # ):
+    #     """Return batch images."""
+    #     while True:
+    #         data_available = len(stream_data) > 0
+    #         if not data_available:
+    #             break
+    #
+    #         batch_img = stream_data[:batch_size]
+    #         stream_data = stream_data[batch_size:]
+    #
+    #         yield batch_img
+    #         return
+
+    def loading_real_data() -> None:
+        """Loading Real Data."""
+        data_dpath = PROJECT_ROOT / "data" / "raw" / "WildfireDataset" / "test" / "images"
+        stream = list(data_dpath.glob("*"))
+
+        # batch_loader = loader_batch_images(stream, batch_size=4)
+        for img_fpath in stream:
+            print(img_fpath)
+            images_row.controls.append(
+                ft.Image(
+                    src=str(img_fpath),
+                    width=200,
+                    height=200,
+                    fit=ft.ImageFit.CONTAIN,
+                    visible=True,
+                    # repeat=ft.ImageRepeat.NO_REPEAT,
+                    # border_radius=ft.border_radius.all(10),
+                ),
+            )
+        page.update()
+
+
+    def run_real_work(e: ft.ControlEvent) -> None:
+        """Create page for real working."""
+        # page.clean()
+        #
+        # page.add(images_row)
+        loading_real_data()
+
+        page.update()
+
+
+    images_row = ft.Row(
+        expand=1,
+        wrap=False,
+        scroll=ft.ScrollMode.ALWAYS,
+    )
 
     # ----- Functions ----- #
     def web_camera_clicked(e: ft.ControlEvent) -> None:
@@ -201,7 +256,7 @@ def main(page: ft.Page) -> None:
                 ft.PopupMenuItem(
                     icon=ft.icons.FOREST_SHARP,
                     text="Run Real Work",
-                    on_click=None,
+                    on_click=run_real_work,
                 ),
             ],
         ),
@@ -263,6 +318,7 @@ def main(page: ft.Page) -> None:
     # ----- Adding Elements ----- #
     page.add(buttons_row)
     page.add(row_container)
+
     page.update()
 
 
