@@ -3,6 +3,7 @@ import time
 import flet as ft
 import folium
 import webbrowser
+import numpy as np
 
 from typing import Generator
 from pathlib import Path
@@ -47,6 +48,50 @@ def main(page: ft.Page) -> None:
             time.sleep(delay_time)
 
 
+    def adding_data_to_table(row_data: list) -> None:
+        """Add data to table."""
+        name_img = row_data[0]
+        img_probs = row_data[1]
+        decimal_latitude = round(row_data[2], 6)
+        decimal_longitude = round(row_data[3], 6)
+
+        has_fire = "No Fire"
+        total_prob = 0.0
+
+        clr_txt = ""
+        italic_font = False
+        if len(img_probs):
+            has_fire = "Yes Fire"
+            total_prob = 1 - np.prod([1 - prob for prob in img_probs])
+            total_prob = round(total_prob, 2)
+
+            italic_font = True
+            clr_txt = "red400"
+
+
+        stats_table.rows.append(
+            ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(
+                        name_img, color=clr_txt, size=16, italic=italic_font,
+                    )),
+                    ft.DataCell(ft.Text(
+                        has_fire, color=clr_txt, size=16, italic=italic_font,
+                    )),
+                    ft.DataCell(ft.Text(
+                        total_prob, color=clr_txt, size=16, italic=italic_font,
+                    )),
+                    ft.DataCell(ft.Text(
+                        decimal_latitude, color=clr_txt, size=16, italic=italic_font,
+                    )),
+                    ft.DataCell(ft.Text(
+                        decimal_longitude, color=clr_txt, size=16, italic=italic_font,
+                    )),
+                ],
+            ),
+        )
+
+
     def run_real_work(e: ft.ControlEvent) -> None:
         """Run real work."""
         data_dpath = PROJECT_ROOT / "data" / "test"
@@ -63,14 +108,18 @@ def main(page: ft.Page) -> None:
         global MAP_PARAM
         MAP_PARAM = 1
 
+        total_num_data = 0
+
         while True:
             imgs_lst = next(batch_imgs, False)
             if imgs_lst is False:
                 break
 
-            evaluate_model(imgs_lst)
+            batch_probs = evaluate_model(imgs_lst)
+            total_num_data += len(imgs_lst)
 
-            for img_fpath in imgs_lst:
+            for img_fpath, img_probs in zip(imgs_lst, batch_probs):
+                # Predict with model
                 path_img = PROJECT_ROOT / "data" / "predicted" / img_fpath.name
                 row_image_holder.content.controls.append(
                     ft.Image(
@@ -82,6 +131,7 @@ def main(page: ft.Page) -> None:
                     )
                 )
 
+                # Add points on map
                 decimal_latitude, decimal_longitude = get_coords_location(img_fpath)
                 folium.Marker(
                     location=[decimal_latitude, decimal_longitude],
@@ -90,6 +140,14 @@ def main(page: ft.Page) -> None:
 
                 fol_map.fit_bounds(fol_map.get_bounds())
                 fol_map.save(map_save_path / "map.html")
+
+                # Add data to table
+                adding_data_to_table([
+                    path_img.name,
+                    img_probs,
+                    decimal_latitude,
+                    decimal_longitude,
+                ])
 
                 page.update()
 
@@ -131,19 +189,18 @@ def main(page: ft.Page) -> None:
         )
         page.update()
 
-        res = evaluate_model(path_file)
-        if res is True:
-            predicted_data = PROJECT_ROOT / "data" / "predicted"
-            predicted_data /= path_file.name
+        probs = evaluate_model(path_file)
+        predicted_data = PROJECT_ROOT / "data" / "predicted"
+        predicted_data /= path_file.name
 
-            image_holder.content = ft.Image(
-                src=predicted_data,
-                visible=True,
-                fit=ft.ImageFit.CONTAIN,
-            )
-            map_row.visible = True
+        image_holder.content = ft.Image(
+            src=predicted_data,
+            visible=True,
+            fit=ft.ImageFit.CONTAIN,
+        )
+        map_row.visible = True
 
-            page.update()
+        page.update()
 
 
     def img_btn_clicked(e: ft.ControlEvent) -> None:
@@ -341,10 +398,54 @@ def main(page: ft.Page) -> None:
         ),
     )
 
+    # ----- Statistics ----- #
+    stats_text = ft.Text(
+        "Results Based On Data",
+        size=18,
+        color="deeppurple100",
+    )
+
+    stats_table = ft.DataTable(
+        columns=[
+            ft.DataColumn(
+                ft.Text("Image Name", size=18),
+            ),
+            ft.DataColumn(
+                ft.Text("Fire", size=18),
+            ),
+            ft.DataColumn(
+                ft.Text("Total Fire Probability", size=18),
+                numeric=True,
+            ),
+            ft.DataColumn(
+                ft.Text("Latitude", size=18),
+                numeric=True
+            ),
+            ft.DataColumn(
+                ft.Text("Longitude", size=18),
+                numeric=True,
+            ),
+        ],
+        rows=[],
+        border_radius=ft.border_radius.all(5),
+        heading_row_color="indigo400",
+    )
+
+    col_stats = ft.Container(
+        content=ft.Column(
+            controls=[stats_table],
+            scroll=ft.ScrollMode.ALWAYS,
+        ),
+        height=500,
+        margin=ft.margin.only(bottom=50),
+    )
+
 
     # ----- Adding Elements ----- #
     page.add(buttons_row)
     page.add(row_container)
+    page.add(stats_text)
+    page.add(col_stats)
 
     page.update()
 

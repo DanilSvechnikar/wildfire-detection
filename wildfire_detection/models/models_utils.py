@@ -1,9 +1,11 @@
 """This module contain functions for working with model."""
+import numpy as np
 import torch
 import cv2
 
 from ultralytics import YOLO
 from pathlib import Path
+from numpy import typing as npt
 
 PROJECT_ROOT = Path().resolve().parents[0]
 
@@ -18,18 +20,23 @@ PARAMS_EVAL = {
 MODEL = YOLO(PROJECT_ROOT / "models" / NAME_MODEL)
 
 
-def evaluate_model(path_file: Path) -> bool:
+def evaluate_model(path_file: Path) -> list[npt.NDArray[np.float32]]:
     """Evaluate model on images."""
     result = MODEL(path_file, save=False, **PARAMS_EVAL)
 
     save_path = PROJECT_ROOT / "data" / "predicted"
+    lst_confs = []
+
     for res in result:
         name_file = Path(res.path).name
-        save_path /= name_file
+        save_path_img = save_path / name_file
 
-        res.save(filename=save_path)
+        res.save(filename=save_path_img)
 
-    return True
+        fire_confs = res.boxes.conf.detach().cpu().numpy()
+        lst_confs.append(fire_confs)
+
+    return lst_confs
 
 
 def evaluate_model_video(path_file: Path) -> None:
