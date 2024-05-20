@@ -39,7 +39,7 @@ def get_coords_location(img_fpath) -> tuple[float, float]:
 
 def get_synthetic_coords() -> DataFrame:
     """Return random synthetic coordinates from dataframe."""
-    csv_coords = PROJECT_ROOT / "data" / "coords.csv"
+    csv_coords = PROJECT_ROOT / "data" / "map_data" / "coords.csv"
     df_coords = pd.read_csv(csv_coords)
     return df_coords.sample()
 

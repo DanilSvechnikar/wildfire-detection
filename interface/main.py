@@ -1,8 +1,10 @@
 """Main App."""
+import time
 import flet as ft
 import folium
 import webbrowser
 
+from typing import Generator
 from pathlib import Path
 
 from wildfire_detection.models.models_utils import (
@@ -15,6 +17,7 @@ from wildfire_detection.data.data_utils import (
 )
 
 PROJECT_ROOT = Path().resolve().parents[0]
+MAP_PARAM = 0 # 0 is google; 1 is folium
 
 
 def main(page: ft.Page) -> None:
@@ -28,58 +31,67 @@ def main(page: ft.Page) -> None:
     page.window_center()
 
     # ----- Real Work Emulation ----- #
-    # def loader_batch_images(
-    #     stream_data: list[Path], batch_size: int = 4, delay_time: float = 1.0,
-    # ):
-    #     """Return batch images."""
-    #     while True:
-    #         data_available = len(stream_data) > 0
-    #         if not data_available:
-    #             break
-    #
-    #         batch_img = stream_data[:batch_size]
-    #         stream_data = stream_data[batch_size:]
-    #
-    #         yield batch_img
-    #         return
+    def loader_batch_images(
+        stream_data: list[Path], batch_size: int = 4, delay_time: float = 1.0,
+    ) -> Generator[list[Path], None, None] | False:
+        """Return batch images."""
+        while True:
+            data_available = len(stream_data) > 0
+            if not data_available:
+                return False
 
-    def loading_real_data() -> None:
-        """Loading Real Data."""
-        data_dpath = PROJECT_ROOT / "data" / "raw" / "WildfireDataset" / "test" / "images"
-        stream = list(data_dpath.glob("*"))
+            batch_img = stream_data[:batch_size]
+            stream_data = stream_data[batch_size:]
 
-        # batch_loader = loader_batch_images(stream, batch_size=4)
-        for img_fpath in stream:
-            print(img_fpath)
-            images_row.controls.append(
-                ft.Image(
-                    src=str(img_fpath),
-                    width=200,
-                    height=200,
-                    fit=ft.ImageFit.CONTAIN,
-                    visible=True,
-                    # repeat=ft.ImageRepeat.NO_REPEAT,
-                    # border_radius=ft.border_radius.all(10),
-                ),
-            )
-        page.update()
+            yield batch_img
+            time.sleep(delay_time)
 
 
     def run_real_work(e: ft.ControlEvent) -> None:
-        """Create page for real working."""
-        # page.clean()
-        #
-        # page.add(images_row)
-        loading_real_data()
+        """Run real work."""
+        data_dpath = PROJECT_ROOT / "data" / "test"
+        stream = list(data_dpath.glob("*.jpg"))
 
+        batch_imgs = loader_batch_images(stream, batch_size=2, delay_time=0.7)
+        row_container.content.controls[1] = row_image_holder
         page.update()
 
+        map_row.visible = True
+        fol_map = folium.Map()
+        map_save_path = PROJECT_ROOT / "data" / "map_data"
 
-    images_row = ft.Row(
-        expand=1,
-        wrap=False,
-        scroll=ft.ScrollMode.ALWAYS,
-    )
+        global MAP_PARAM
+        MAP_PARAM = 1
+
+        while True:
+            imgs_lst = next(batch_imgs, False)
+            if imgs_lst is False:
+                break
+
+            evaluate_model(imgs_lst)
+
+            for img_fpath in imgs_lst:
+                path_img = PROJECT_ROOT / "data" / "predicted" / img_fpath.name
+                row_image_holder.content.controls.append(
+                    ft.Image(
+                        src=path_img,
+                        visible=True,
+                        fit=ft.ImageFit.CONTAIN,
+                        repeat=ft.ImageRepeat.NO_REPEAT,
+                        border_radius=ft.border_radius.all(10),
+                    )
+                )
+
+                decimal_latitude, decimal_longitude = get_coords_location(img_fpath)
+                folium.Marker(
+                    location=[decimal_latitude, decimal_longitude],
+                    tooltip="Click for more information",
+                ).add_to(fol_map)
+
+                fol_map.fit_bounds(fol_map.get_bounds())
+                fol_map.save(map_save_path / "map.html")
+
+                page.update()
 
     # ----- Functions ----- #
     def web_camera_clicked(e: ft.ControlEvent) -> None:
@@ -89,27 +101,17 @@ def main(page: ft.Page) -> None:
 
     def map_btn_clicked(e: ft.ControlEvent) -> None:
         """Open map in browser."""
+        if MAP_PARAM:
+            map_path = PROJECT_ROOT / "data" / "map_data" / "map.html"
+            webbrowser.open("file://" + str(map_path), new=2)
+            return
+
         current_img_fpath = image_holder.content.src
         img_fpath = current_img_fpath.resolve().parents[1] / "test" / current_img_fpath.name
 
         decimal_latitude, decimal_longitude = get_coords_location(img_fpath)
         url = f"https://www.google.com/maps?q={decimal_latitude},{decimal_longitude}"
         webbrowser.open_new_tab(url)
-
-        # fol_map = folium.Map()
-        #
-        # folium.Marker(
-        #     location=[6.243499,-75.579226],
-        #     tooltip="Click for more information",
-        #     popup="Medellin",
-        # ).add_to(fol_map)
-        #
-        # fol_map.fit_bounds(fol_map.get_bounds())
-        #
-        # save_path = PROJECT_ROOT / "data" / "temp" / "map.html"
-        # fol_map.save(save_path)
-        #
-        # webbrowser.open("file://" + str(save_path), new=2)
 
 
     def run_predict(e: ft.ControlEvent) -> None:
@@ -152,6 +154,11 @@ def main(page: ft.Page) -> None:
         run_predictor_btn.color = "#FF6E1C"
         run_predictor_btn.bgcolor = "#8E0A3D"
         run_predictor_btn.disabled = False
+
+        for item in column_data.content.controls:
+            item.content.icon_color = "green600"
+            if item.content.text == e.control.data.name:
+                item.content.icon_color = "red500"
 
         page.update()
 
@@ -290,16 +297,36 @@ def main(page: ft.Page) -> None:
             rotation=45,
         ),
         width=300,
-        height=page.window_height - 70,
+        height=page.window_height - 50,
         border_radius=ft.border_radius.all(5),
         padding=ft.padding.all(10),
-        visible=False,
+        visible=True,
     )
+
+    txt_for_column_data = ft.Text(
+        "Click on 'Open Gallery'",
+        visible=True,
+        size=16,
+        color="purple100",
+    )
+    column_data.content.controls.append(txt_for_column_data)
 
     image_holder = ft.Container(
         content=ft.Image(
             visible=False,
             fit=ft.ImageFit.CONTAIN,
+        ),
+        width=page.window_width - column_data.padding.left - 90,
+        height=page.window_height - 15,
+        alignment=ft.alignment.center_left,
+        border_radius=ft.border_radius.all(5),
+    )
+
+    row_image_holder = ft.Container(
+        content=ft.Row(
+            expand=1,
+            wrap=False,
+            scroll=ft.ScrollMode.ALWAYS,
         ),
         width=page.window_width - column_data.padding.left - 90,
         height=page.window_height - 15,
