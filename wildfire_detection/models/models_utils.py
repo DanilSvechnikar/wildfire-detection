@@ -8,16 +8,18 @@ from pathlib import Path
 from numpy import typing as npt
 
 PROJECT_ROOT = Path().resolve().parents[0]
+IMG_FOR_PRELOAD_MODEL = PROJECT_ROOT / "data" / "test" / "img_for_preload_model.jpg"
 
 NAME_MODEL = "trained_yolov8n.pt"
 PARAMS_EVAL = {
     "device": "cuda" if torch.cuda.is_available() else "cpu",
     # "imgsz": 640,
-    # "iou": 0.7,
+    "iou": 0.6,
     "conf": 0.20,
 }
 
 MODEL = YOLO(PROJECT_ROOT / "models" / NAME_MODEL)
+MODEL(IMG_FOR_PRELOAD_MODEL, save=False, **PARAMS_EVAL)
 
 
 def evaluate_model(path_file: Path) -> list[npt.NDArray[np.float32]]:
