@@ -275,17 +275,6 @@ files = [
 jinja2 = ">=3"
 
 [[package]]
-name = "cachetools"
-version = "5.3.3"
-description = "Extensible memoizing collections and decorators"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "cachetools-5.3.3-py3-none-any.whl", hash = "sha256:0abad1021d3f8325b2fc1d2e9c8b9c9d57b04c3932657a72465447332c24d945"},
-    {file = "cachetools-5.3.3.tar.gz", hash = "sha256:ba29e2dfa0b8b556606f097407ed1aa62080ee108ab0dc5ec9d6a723a007d105"},
-]
-
-[[package]]
 name = "certifi"
 version = "2024.2.2"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -2125,43 +2114,6 @@ files = [
 ]
 
 [[package]]
-name = "nvitop"
-version = "1.3.2"
-description = "An interactive NVIDIA-GPU process viewer and beyond, the one-stop solution for GPU process management."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "nvitop-1.3.2-py3-none-any.whl", hash = "sha256:be61c3375c99c2d871bf87f46e7969c89da730593c14734120de4f16203022e8"},
-    {file = "nvitop-1.3.2.tar.gz", hash = "sha256:9ea401dfca6b268cf30c041e428f461aab31e4bc5e17bc8e923568e16c9cb1f1"},
-]
-
-[package.dependencies]
-cachetools = ">=1.0.1"
-colorama = {version = ">=0.4.0", markers = "platform_system == \"Windows\""}
-nvidia-ml-py = ">=11.450.51,<12.536.0a0"
-psutil = ">=5.6.6"
-termcolor = ">=1.0.0"
-windows-curses = {version = ">=2.2.0", markers = "platform_system == \"Windows\""}
-
-[package.extras]
-cuda10 = ["nvidia-ml-py (==11.450.51)"]
-lint = ["black (>=22.6.0)", "isort", "mypy", "pre-commit", "pylint[spelling] (>=2.16.0)", "typing-extensions"]
-pynvml-11-450-129 = ["nvidia-ml-py (==11.450.129)"]
-pynvml-11-450-51 = ["nvidia-ml-py (==11.450.51)"]
-pynvml-11-460-79 = ["nvidia-ml-py (==11.460.79)"]
-pynvml-11-470-66 = ["nvidia-ml-py (==11.470.66)"]
-pynvml-11-495-46 = ["nvidia-ml-py (==11.495.46)"]
-pynvml-11-510-69 = ["nvidia-ml-py (==11.510.69)"]
-pynvml-11-515-48 = ["nvidia-ml-py (==11.515.48)"]
-pynvml-11-515-75 = ["nvidia-ml-py (==11.515.75)"]
-pynvml-11-525-112 = ["nvidia-ml-py (==11.525.112)"]
-pynvml-11-525-131 = ["nvidia-ml-py (==11.525.131)"]
-pynvml-11-525-84 = ["nvidia-ml-py (==11.525.84)"]
-pynvml-12-535-108 = ["nvidia-ml-py (==12.535.108)"]
-pynvml-12-535-133 = ["nvidia-ml-py (==12.535.133)"]
-pynvml-12-535-77 = ["nvidia-ml-py (==12.535.77)"]
-
-[[package]]
 name = "oauthlib"
 version = "3.2.2"
 description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
@@ -3346,20 +3298,6 @@ type = "url"
 url = "https://download.pytorch.org/whl/sympy-1.12-py3-none-any.whl"
 
 [[package]]
-name = "termcolor"
-version = "2.4.0"
-description = "ANSI color formatting for output in terminal"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "termcolor-2.4.0-py3-none-any.whl", hash = "sha256:9297c0df9c99445c2412e832e882a7884038a25617c60cea2ad69488d4040d63"},
-    {file = "termcolor-2.4.0.tar.gz", hash = "sha256:aab9e56047c8ac41ed798fa36d892a37aca6b3e9159f3e0c24bc64a9b3ac7b7a"},
-]
-
-[package.extras]
-tests = ["pytest", "pytest-cov"]
-
-[[package]]
 name = "terminado"
 version = "0.18.1"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
@@ -3980,29 +3918,6 @@ files = [
 ]
 
 [[package]]
-name = "windows-curses"
-version = "2.3.2"
-description = "Support for the standard curses module on Windows"
-optional = false
-python-versions = "*"
-files = [
-    {file = "windows_curses-2.3.2-cp310-cp310-win32.whl", hash = "sha256:0286d35c9a2589731af3cf2b1251635a400f4b61aef2b9c081f6c98e7887a170"},
-    {file = "windows_curses-2.3.2-cp310-cp310-win_amd64.whl", hash = "sha256:b5e68520c7e92dff72914e4126cadb5b8eb3b6c968d955de6d35ff42306da8c0"},
-    {file = "windows_curses-2.3.2-cp311-cp311-win32.whl", hash = "sha256:95d2a288af6172270da5ca9225aa99eeae98595c6e90f3574aa9b9f2fc1d2619"},
-    {file = "windows_curses-2.3.2-cp311-cp311-win_amd64.whl", hash = "sha256:9b7ecd0f21f643e22a979effff25f62200626bb9853ea8b9aacf0bbcaab0950d"},
-    {file = "windows_curses-2.3.2-cp312-cp312-win32.whl", hash = "sha256:4546122f5bec2fb46c1706c020d971bcfc4d9a5158372f25ba7472a834b0f165"},
-    {file = "windows_curses-2.3.2-cp312-cp312-win_amd64.whl", hash = "sha256:e3f27939f39143c513f444a8c0419b2737e8de55fbe5d63d765992512125366d"},
-    {file = "windows_curses-2.3.2-cp36-cp36m-win32.whl", hash = "sha256:a570f744a62108d024a7775b3b156b2ae2380fc971237c3bd2742341e7151f22"},
-    {file = "windows_curses-2.3.2-cp36-cp36m-win_amd64.whl", hash = "sha256:f81294465a67e43ddc50c1b52711b100b002fa1238f87d84d0cf94b785c4fe75"},
-    {file = "windows_curses-2.3.2-cp37-cp37m-win32.whl", hash = "sha256:72ff5d8963fbb3aa662bfced2c5ea22dc3ed58bac827a3bff74a1de5eacdbe57"},
-    {file = "windows_curses-2.3.2-cp37-cp37m-win_amd64.whl", hash = "sha256:70d8cb4ddad43f695a266f79c7a31d40ac8aee2a17cf8e06ecfd4a71589ad30d"},
-    {file = "windows_curses-2.3.2-cp38-cp38-win32.whl", hash = "sha256:6bc698058081408685975256f46f570c32f8d7e1f4f82f9d6c66c300c6daff89"},
-    {file = "windows_curses-2.3.2-cp38-cp38-win_amd64.whl", hash = "sha256:f73bfd283f86d3ac0a72b74307ccc99ea0fd008a732d80db95d31fbafeee3c66"},
-    {file = "windows_curses-2.3.2-cp39-cp39-win32.whl", hash = "sha256:e4ec5245f0c00ede45b033a885511eea80d5928c9bd3ceb523fbfb086370a4df"},
-    {file = "windows_curses-2.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:00d5d000b68db38bd97b6a5b90ee4b4c915a7cef7492fc5aa9ecc7794ee2ca93"},
-]
-
-[[package]]
 name = "xyzservices"
 version = "2024.4.0"
 description = "Source of XYZ tiles providers"
@@ -4016,4 +3931,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "eafcdaf698d27c9cbdfccca48348d726dbaeeef2372a3c48aebb3b5aa5945383"
+content-hash = "289a17c64d480228b770d80ed25b5e0bc7018d66f7cf553daf84261518ec6cec"
