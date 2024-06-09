@@ -33,7 +33,7 @@ def main(page: ft.Page) -> None:
 
     # ----- Real Work Emulation ----- #
     def loader_batch_images(
-        stream_data: list[Path], batch_size: int = 4, delay_time: float = 0.5,
+        stream_data: list[Path], batch_size: int = 4, delay_time: float = 0.05,
     ) -> Generator[list[Path], None, None] | False:
         """Return batch images."""
         while True:
@@ -97,7 +97,7 @@ def main(page: ft.Page) -> None:
         data_dpath = PROJECT_ROOT / "data" / "test"
         stream = list(data_dpath.glob("*.jpg"))
 
-        batch_imgs = loader_batch_images(stream, batch_size=2, delay_time=0.4)
+        batch_imgs = loader_batch_images(stream)
         row_container.content.controls[1] = row_image_holder
         page.update()
 
